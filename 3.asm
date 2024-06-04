@@ -5,9 +5,12 @@ data segment
     y db ?
     y1 db ?
     y2 db ?
-    perenos db 13, 10, "$"
-    input_a db 13, 10, "input a = $"
-    input_x db 13, 10, "input x = $"
+    is_a_neg db ?       ; 0 or 1
+    is_x_neg db ?       ; 0 or 1
+    
+    perenos db 13, 10,  "$"
+    input_a db 13, 10,  "input a = $"
+    input_x db 13, 10,  "input x = $"
     output_y db 13, 10, "y = $"
 ends
 
@@ -27,120 +30,78 @@ start:
     mov ah, 9
     int 21h
     
-step2:
+@input_a:
     mov ah, 1
     int 21h
     cmp al, "-"
-    jnz step1
-    mov bx, 1
-    jmp step2
+    jnz @set_a_start
+    mov is_a_neg, 1
+    jmp @input_a
     
-step1:            
+@set_a_start:            
     sub al, 30h
-    test bx, bx
-    jz step3
+    mov bl, is_a_neg
+    test bl, bl
+    mov bl, 0
+    jz @set_a_end
     neg al
 
-step3:
-    MOV a, AL
-    XOR AX, AX 
-    XOR BX, BX
+@set_a_end:
+    mov a, al
+    
+@output_input_x:
+    mov ax, 0
+    mov bx, 0
     MOV DX, OFFSET input_x
     MOV AH, 9
     INT 21H 
 
-step4:
+@input_x:
     MOV AH, 1 
     INT 21H 
     CMP AL, "-" 
-    JNZ step5 
-    MOV BX, 1 
-    JMP step4 
+    JNZ @set_x_start 
+    MOV is_x_neg, 1 
+    JMP @input_x 
 
-step5:
-    SUB AL, 30H 
-    TEST BX, BX 
-    JZ step6 
-    NEG AL
+@set_x_start:            
+    sub al, 30h
+    mov bl, is_x_neg
+    test bl, bl
+    mov bl, 0
+    jz @set_x_end
+    neg al
+
+@set_x_end:
+    mov x, al          
+         
       
 ; tut nachinaetsa
       
-step6:
-    mov x, al
-    
-    mov ax, 0
-     
-    cmp x, 7d
-    jg @x_much_than_7
-    jle @x_less_or_equal_to_7
-    
-    cmp x, 2d
-    jg @x_much_than_2
-    jle @x_less_or_equal_to_2
-    
-    mov al, y1
-    idiv y2
-    mov ah, 0
-    
-    mov y, al
-     
-    JMP SHORT @VIXOD
-
-
-@x_much_than_7:
-    mov y1, 15d
-    mov dl, x
-    add y1, dl
-    
-@x_less_or_equal_to_7:
-    cmp a, 0
-    jge @x_le_a_pos
-    jl @x_le_a_neg
-   
-    
-@x_le_a_pos:
-    mov dl, a
-    mov y1, 9
-    add y1, dl 
- 
-@x_le_a_neg:
-    neg a
-    mov dl, a
-    mov y1, 9
-    add y1, dl
-    neg a 
-
-
-@x_much_than_2:
-    mov y1, 3d
-    
-@x_less_or_equal_to_2:
-    mov y2, -5d
-    cmp x, 0
-    jge @x_le_x_pos
-    jl @x_le_x_neg
-   
-    
-@x_le_x_pos:
-    mov dl, x
-    add y2, dl 
- 
-@x_le_x_neg:
-    neg x
-    mov dl, x
-    add y2, dl
-    neg x       
-                
-     
-@VIXOD:
-
+@start:
     mov ax, 0
     mov bx, 0
     mov cx, 0
     mov dx, 0
     
-    mov al, y
+@set_y1:
+    cmp x, 7
+    jg @set_y1_var1    ; if x > 7 jump
+    
+    ; var2
+    
+@set_y1_var2:
+    mov y1, 9
+    mov bl, is_a_neg
+    test bl, bl
+    mov bl, 0
+    jz @set_y1_var2_a_pos    ; if is_a_neg = 0
+    
 
+    
+    
+@set_y1_var1:
+        
           
 ENDS
 
