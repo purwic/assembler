@@ -169,10 +169,43 @@ start:
     mov ah, 0
     
     mov y, al
-        
+    
+    
+@output_y:
+    
+    mov ax, 0
+    mov dx, offset output_y 
+    mov ah, 9
+    int 21h
+    mov dx, 0
+    
+    cmp y, 0               ; >= then positive
+    jge @output_y_pos
+    ; else
+          
+          
+@output_y_neg:    
+    mov al, y
+    NEG AL 
+    MOV BL, AL 
+    MOV DL, "-" 
+    MOV AH, 2 
+    INT 21H
+    MOV DL, BL
+    ADD DL, 30H 
+    INT 21H 
+    JMP @end 
+           
+           
+@output_y_pos:
+    MOV DL, Y 
+    ADD DL, 30H 
+    MOV AH, 2 
+    INT 21H            
 
 
-
+@end:
+    
 
 
 
